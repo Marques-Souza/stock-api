@@ -4,6 +4,9 @@ import com.marquesdev.stock.dto.PasswordRequestDto;
 import com.marquesdev.stock.dto.UserRequestDto;
 import com.marquesdev.stock.dto.UserResponseDto;
 import com.marquesdev.stock.entity.User;
+import com.marquesdev.stock.exception.EntityNotFoundException;
+import com.marquesdev.stock.exception.PasswordInvalidException;
+import com.marquesdev.stock.exception.UserEmailUniqueException;
 import com.marquesdev.stock.mapper.UserMapper;
 import com.marquesdev.stock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +26,19 @@ public class UserService {
     @Transactional
     public UserResponseDto saveUser(UserRequestDto userRequestDto) {
         User user = userMapper.toUser(userRequestDto);
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
+
+        try {
+            User savedUser = userRepository.saveAndFlush(user);
+            return userMapper.toDto(savedUser);
+        }catch (org.springframework.dao.DataIntegrityViolationException ex){
+            throw new UserEmailUniqueException("Email Already exists.");
+        }
     }
 
     @Transactional(readOnly = true)
     public UserResponseDto getUser(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
         return userMapper.toDto(user);
     }
 
@@ -48,11 +56,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with id:" + id));
 
         if (!passwordRequestDto.newPassword().equals(passwordRequestDto.confirmPassword())){
-            throw new RuntimeException("New password and confirmation do not match.");
+            throw new PasswordInvalidException("New password and confirmation do not match.");
         }
 
         if (!existingUser.getPassword().equals(passwordRequestDto.currentPassword())){
-            throw new RuntimeException("Current password is incorrect.");
+            throw new PasswordInvalidException("Current password is incorrect.");
         }
         existingUser.setPassword(passwordRequestDto.newPassword());
         return userMapper.toDto(existingUser);
