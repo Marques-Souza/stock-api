@@ -11,6 +11,7 @@ public class JwtUserDetails extends User {
 
     public JwtUserDetails(com.marquesdev.stock.entity.User user) {
         super(user.getEmail(), user.getPassword(), AuthorityUtils.createAuthorityList(user.getProfile().name()));
+        this.user = user;
     }
 
     public UUID getId(){
