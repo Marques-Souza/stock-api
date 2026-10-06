@@ -17,24 +17,22 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Table(name = "users")
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id")
     private UUID id;
 
-    @Column(name = "email", nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    @Column(name = "password", nullable = false, length = 200)
+    @Column(nullable = false, length = 200)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "Profile", nullable = false, length = 25)
+    @Column(nullable = false, length = 25)
     private Profile profile;
 
     @CreatedDate
@@ -53,6 +51,17 @@ public class User implements Serializable {
     @Column(name = "modified_by")
     private String modifiedBy;
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
 
     @Override
     public boolean equals(Object o) {
