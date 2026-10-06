@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,13 @@ public class UserController {
     private final UserService userService;
 
     @Operation(summary = "Create a new user",
-            description = "Create a new user in the database.",
+            description = "Endpoint to create a new user accessible by the admin (Bearer token required)",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "User created successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+                    @ApiResponse(responseCode = "403", description = "User not authorized",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "409", description = "Email already exists",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "422", description = "Invalid fields",
@@ -46,10 +50,13 @@ public class UserController {
     }
 
     @Operation(summary = "Retrieve a user by ID",
-            description = "Retrieve a user by ID in the database.",
+            description = "Endpoint to get user by ID (Bearer token required)",
+            security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "User retrieved successfully",
+                    @ApiResponse(responseCode = "202", description = "User retrieved successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+                    @ApiResponse(responseCode = "403", description = "User not authorized",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "409", description = "User not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
@@ -63,10 +70,13 @@ public class UserController {
 
 
     @Operation(summary = "Retrieve all users",
-            description = "Retrieve all user in the database.",
+            description = "Endpoint to list all users accessibly by the admin and attendant (Bearer token required)",
+            security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Users retrieved successfully",
-                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class))))
+                    @ApiResponse(responseCode = "200", description = "Users retrieved successfully",
+                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))),
+                    @ApiResponse(responseCode = "403", description = "User not authorized",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             }
     )
     @GetMapping
@@ -77,11 +87,14 @@ public class UserController {
     }
 
     @Operation(summary = "Update password",
-            description = "Update user password in the database.",
+            description = "Endpoint to update user password accessible by the admin ",
+            security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Password updated successfully",
+                    @ApiResponse(responseCode = "200", description = "Password updated successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "400", description = "Password does not match",
+                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "User not authorized",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "404", description = "User not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
@@ -90,7 +103,7 @@ public class UserController {
             }
     )
     @PatchMapping("/{id}/password")
-    @PreAuthorize("hasAuthority('ADMIN")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<UserResponseDto> updatePassword(@PathVariable UUID id,@Valid @RequestBody PasswordRequestDto passwordRequestDto){
         UserResponseDto updatedPassword = userService.updatePassword(id, passwordRequestDto);
         return ResponseEntity.ok(updatedPassword);
