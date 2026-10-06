@@ -36,6 +36,7 @@ public class UserIT {
 
 
     private final String ADMIN_PROFILE = "ADMIN";
+    private final String ATTENDANT_PROFILE = "ATTENDANT";
 
     // Test credentials constants
     private final String ADMIN_USER = "support@gmail.com";
@@ -53,6 +54,7 @@ public class UserIT {
         UserResponseDto responseBody = testClient
                 .post()
                 .uri(USERS_URI)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UserRequestDto("cleber@gmail.com","123456",ADMIN_PROFILE))
                 .exchange()
@@ -71,6 +73,7 @@ public class UserIT {
         ErrorMessage reponseBody = testClient
                 .post()
                 .uri(USERS_URI)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UserRequestDto(ADMIN_USER, "123456", ADMIN_PROFILE))
                 .exchange()
@@ -87,6 +90,7 @@ public class UserIT {
         ErrorMessage reponseBody = testClient
                 .post()
                 .uri(USERS_URI)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new UserRequestDto("","",""))
                 .exchange()
@@ -98,6 +102,29 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(reponseBody.getStatus()).isEqualTo(422);
     }
 
+    @Test
+    public void createUser_WithoutAuthentication_ReturnsStatus401(){
+       testClient
+                .post()
+                .uri(USERS_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserRequestDto("cleber@gmail.com","123456",ADMIN_PROFILE))
+                .exchange()
+                .expectStatus().isUnauthorized();
+    }
+
+    @Test
+    public void createUser_WithAttendantUser_ReturnsStatus403(){
+        testClient
+                .post()
+                .uri(USERS_URI)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ATTENDANT_USER, ATTENDANT_PASS))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserRequestDto("cleber@gmail.com","123456",ADMIN_PROFILE))
+                .exchange()
+                .expectStatus().isForbidden();
+    }
+
       // ===========================================
      // TEST BLOCK: GET /api/v1/users/{id} (Get User by ID)
     // =============================================
@@ -107,6 +134,7 @@ public class UserIT {
         UserResponseDto responseBody = testClient
                 .get()
                 .uri(USERS_URI + "/" + ADMIN_ID)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseDto.class)
@@ -123,6 +151,7 @@ public class UserIT {
         ErrorMessage responseBody = testClient
                 .get()
                 .uri(USERS_URI + "/" + INEXISTENT_ID)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .exchange()
                 .expectStatus().isEqualTo(404)
                 .expectBody(ErrorMessage.class)
@@ -130,6 +159,31 @@ public class UserIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void getUserById_WithoutAuthentication_ReturnsStatus401(){
+        testClient
+                .get()
+                .uri(USERS_URI + "/" + ADMIN_ID)
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+    }
+
+    @Test
+    public void getUserById_WithAttendantUserAndDifferentId_ReturnsStatus403(){
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri(USERS_URI + "/" + ADMIN_ID)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ATTENDANT_USER, ATTENDANT_PASS))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
       // ===========================================
@@ -141,6 +195,7 @@ public class UserIT {
         UserResponseDto[] responseBody = testClient
                 .get()
                 .uri(USERS_URI)
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody(UserResponseDto[].class)
@@ -148,6 +203,16 @@ public class UserIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.length).isEqualTo(3);
+    }
+
+    @Test
+    public void getAllUsers_WithoutAuthentication_ReturnsStatus401(){
+         testClient
+                .get()
+                .uri(USERS_URI)
+                .exchange()
+                .expectStatus().isUnauthorized();
+
     }
 
       // ===========================================
@@ -159,6 +224,7 @@ public class UserIT {
         UserResponseDto responseBody = testClient
                 .patch()
                 .uri(USERS_URI + "/" + ADMIN_ID + "/password")
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new PasswordRequestDto(ADMIN_PASS, "newpass123", "newpass123"))
                 .exchange()
@@ -174,6 +240,7 @@ public class UserIT {
         ErrorMessage responseBody = testClient
                 .patch()
                 .uri(USERS_URI + "/" + ADMIN_ID + "/password")
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new PasswordRequestDto("wrongpass", "newpass123", "newpass123"))
                 .exchange()
@@ -190,6 +257,7 @@ public class UserIT {
         ErrorMessage responseBody = testClient
                 .patch()
                 .uri(USERS_URI + "/" + ADMIN_ID + "/password")
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new PasswordRequestDto("", "", ""))
                 .exchange()
@@ -206,6 +274,7 @@ public class UserIT {
         ErrorMessage responseBody = testClient
                 .patch()
                 .uri(USERS_URI + "/" + INEXISTENT_ID + "/password")
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(new PasswordRequestDto(ADMIN_PASS, "newpass123", "newpass123"))
                 .exchange()
@@ -215,5 +284,34 @@ public class UserIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void updatePassword_WithoutAuthentication_ReturnsStatus401(){
+        testClient
+                .patch()
+                .uri(USERS_URI + "/" + ADMIN_ID + "/password")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new PasswordRequestDto(ADMIN_PASS, "newpass123", "newpass123"))
+                .exchange()
+                .expectStatus().isUnauthorized();
+
+    }
+
+    @Test
+    public void updatePassword_WithAttendantUser_ReturnsStatus403(){
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri(USERS_URI + "/" + ADMIN_ID + "/password")
+                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ATTENDANT_USER, ATTENDANT_PASS))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new PasswordRequestDto(ADMIN_PASS, "newpass123", "newpass123"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 }
