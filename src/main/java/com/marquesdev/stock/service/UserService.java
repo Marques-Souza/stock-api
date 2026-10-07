@@ -7,8 +7,7 @@ import com.marquesdev.stock.entity.User;
 import com.marquesdev.stock.enums.Profile;
 import com.marquesdev.stock.exception.EntityNotFoundException;
 import com.marquesdev.stock.exception.PasswordInvalidException;
-import com.marquesdev.stock.exception.UserEmailUniqueException;
-import com.marquesdev.stock.jwt.JwtToken;
+import com.marquesdev.stock.exception.EmailUniqueException;
 import com.marquesdev.stock.mapper.UserMapper;
 import com.marquesdev.stock.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,7 @@ public class UserService {
             User savedUser = userRepository.saveAndFlush(user);
             return userMapper.toDto(savedUser);
         }catch (org.springframework.dao.DataIntegrityViolationException ex){
-            throw new UserEmailUniqueException("Email Already exists.");
+            throw new EmailUniqueException("Email Already exists.");
         }
     }
 
