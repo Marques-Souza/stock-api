@@ -20,7 +20,7 @@ public record ClientRequestDto(
         String email,
 
         @NotBlank(message = "Phone cannot be blank.")
-        @Pattern(regexp = "^\\d{10,11}$", message = "Phone must contain 10 or 11 digits.")
+        @Size(max = 20, message = "Phone number must contain a maximum of 20 characters.")
         String phone
 
 ) {
