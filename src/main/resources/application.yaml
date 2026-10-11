@@ -34,4 +34,5 @@ app:
     endpoints:
       users: /api/v1/users
       clients: /api/v1/clients
+      suppliers: /api/v1/suppliers
 
