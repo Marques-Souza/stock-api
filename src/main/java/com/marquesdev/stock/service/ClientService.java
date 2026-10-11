@@ -11,6 +11,8 @@ import com.marquesdev.stock.mapper.ClientMapper;
 import com.marquesdev.stock.repository.ClientRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,15 +49,13 @@ public class ClientService {
 
 
     @Transactional(readOnly = true)
-    public List<ClientResponseDto> getAllClients(String search) {
-        List<Client> clients = clientRepository.findAll();
+    public Page<ClientResponseDto> findAll(String search, Pageable pageable) {
+        Page<Client> clientsPage = clientRepository.findAll(pageable);
 
         if (search != null && !search.isBlank()){
-            clients = clientRepository.findBySearch(search);
+            clientsPage = clientRepository.findBySearch(search, pageable);
         }
-        return clients.stream()
-                .map(clientMapper::toDto)
-                .toList();
+        return clientsPage.map(clientMapper::toDto);
     }
 
     @Transactional
