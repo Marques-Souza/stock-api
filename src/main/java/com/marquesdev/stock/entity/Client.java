@@ -29,7 +29,7 @@ public class Client {
     @Column(nullable = false, length = 150)
     private String name;
 
-    @Column(nullable = false, length = 18, unique = true)
+    @Column(nullable = false, length = 14, unique = true)
     private String cnpj;
 
     @Column(nullable = false, length = 100, unique = true)

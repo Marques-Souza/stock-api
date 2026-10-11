@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 public record ClientRequestDto(
 
@@ -13,6 +14,8 @@ public record ClientRequestDto(
 
         @NotBlank(message = "CNPJ cannot be blank.")
         @Pattern(regexp = "^\\d{14}$", message = "CNPJ must contain exactly 14 digits.")
+        @Size(min = 14, max = 14, message = "CNPJ must contain exactly 14 digits.")
+        @CNPJ(message = "Invalid CNPJ format.")
         String cnpj,
 
         @NotBlank(message = "Email cannot be blank.")
