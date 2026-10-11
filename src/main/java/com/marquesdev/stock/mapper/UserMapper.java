@@ -6,7 +6,6 @@ import com.marquesdev.stock.dto.UserResponseDto;
 import com.marquesdev.stock.entity.User;
 import com.marquesdev.stock.enums.Profile;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserMapper {
 
-    private final ModelMapper modelMapper;
+
     private final ResourceUrlBuilder resourceUrlBuilder;
 
     @Value("${app.api.endpoints.users}")
