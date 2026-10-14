@@ -5,7 +5,6 @@ import com.marquesdev.stock.dto.CategoryRequestDto;
 import com.marquesdev.stock.dto.CategoryResponseDto;
 import com.marquesdev.stock.dto.CategoryUpdateDto;
 import com.marquesdev.stock.entity.Category;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -32,7 +31,8 @@ public class CategoryMapper {
                 category.getId(),
                 category.getName(),
                 category.getDescription(),
-                resourceUrlBuilder.build(categoryEndpoint, category.getId())
+                resourceUrlBuilder.build(categoryEndpoint, category.getId()),
+                resourceUrlBuilder.buildImageUrl(category.getImageUrl())
         );
     }
 

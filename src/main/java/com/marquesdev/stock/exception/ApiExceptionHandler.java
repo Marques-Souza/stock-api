@@ -23,7 +23,7 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage( request, HttpStatus.FORBIDDEN, ex.getMessage()));
     }
-    @ExceptionHandler({EmailUniqueException.class, CnpjUniqueException.class})
+    @ExceptionHandler({EmailUniqueException.class, CnpjUniqueException.class, CategoryAlreadyExistsException.class})
     public ResponseEntity<ErrorMessage>uniqueException(RuntimeException ex,
                                                                  HttpServletRequest request){
         log.error("Api Error", ex);

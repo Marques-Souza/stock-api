@@ -44,6 +44,12 @@ public class ImageService {
         return directoryName + "/" + filename;
     }
 
+    public String replace(String oldImageKey, MultipartFile file, String directoryName) {
+        String newImageKey = store(file, directoryName);
+        delete(oldImageKey);
+        return newImageKey;
+    }
+
     public void delete(String imageKey){
         if (imageKey == null || imageKey.isBlank()){
             return;
