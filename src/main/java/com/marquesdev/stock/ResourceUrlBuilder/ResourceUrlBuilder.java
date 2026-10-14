@@ -11,7 +11,11 @@ public class ResourceUrlBuilder {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    public String build(String endpoint, UUID id){
+    public String build(String endpoint, UUID id) {
         return baseUrl + endpoint + "/" + id;
+    }
+
+    public String buildImageUrl(String imageKey) {
+        return baseUrl + "/uploads/" + imageKey;
     }
 }

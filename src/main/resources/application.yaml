@@ -37,3 +37,8 @@ app:
       suppliers: /api/v1/suppliers
       categories: /api/v1/categories
 
+  ## Image upload configuration
+  upload:
+    images: ${IMAGE_UPLOAD_DIR:./uploads}
+    max-size: 5MB
+    allowed-content-types: image/jpeg, image/png, image/webp
