@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class SupplierMapper {
 
     private final ResourceUrlBuilder resourceUrlBuilder;

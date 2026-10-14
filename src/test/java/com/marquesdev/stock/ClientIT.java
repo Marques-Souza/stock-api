@@ -38,7 +38,7 @@ public class ClientIT {
                 .uri(CLIENTS_URI)
                 .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ClientRequestDto("Nova Empresa Ltda", "12345678000190", "nova@empresa.com", "11999998888"))
+                .bodyValue(new ClientRequestDto("Nova Empresa Ltda", "63889406000197", "nova@empresa.com", "11999998888"))
                 .exchange()
                 .expectStatus().isCreated()
                 .expectBody(ClientResponseDto.class)
@@ -47,7 +47,7 @@ public class ClientIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.id()).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.name()).isEqualTo("Nova Empresa Ltda");
-        org.assertj.core.api.Assertions.assertThat(responseBody.cnpj()).isEqualTo("12345678000190");
+        org.assertj.core.api.Assertions.assertThat(responseBody.cnpj()).isEqualTo("63889406000197");
         org.assertj.core.api.Assertions.assertThat(responseBody.email()).isEqualTo("nova@empresa.com");
         org.assertj.core.api.Assertions.assertThat(responseBody.phone()).isEqualTo("11999998888");
     }
@@ -59,7 +59,7 @@ public class ClientIT {
                 .uri(CLIENTS_URI)
                 .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, ADMIN_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ClientRequestDto("Empresa Diferente", "12345678000190", "contato@inovatech.com", "11999998888"))
+                .bodyValue(new ClientRequestDto("Empresa Diferente", "63889406000197", "contato@inovatech.com", "11999998888"))
                 .exchange()
                 .expectStatus().isEqualTo(409)
                 .expectBody(ErrorMessage.class)
@@ -121,7 +121,7 @@ public class ClientIT {
                 .uri(CLIENTS_URI)
                 .headers(JwtAuthentication.getHeadersAuthorization(testClient, ATTENDANT_USER, ATTENDANT_PASS))
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(new ClientRequestDto("Nova Empresa Ltda", "12345678000190", "nova@empresa.com", "11999998888"))
+                .bodyValue(new ClientRequestDto("Nova Empresa Ltda", "63889406000197", "nova@empresa.com", "11999998888"))
                 .exchange()
                 .expectStatus().isForbidden();
     }
