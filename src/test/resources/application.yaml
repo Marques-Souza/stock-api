@@ -3,7 +3,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
 
 ## API Endpoint configuration
@@ -14,3 +14,9 @@ app:
       users: /api/v1/users
       clients: /api/v1/clients
       suppliers: /api/v1/suppliers
+      categories: /api/v1/categories
+
+  upload:
+    images: ./uploads
+    max-size: 5MB
+    allowed-content-types: image/jpeg, image/png, image/webp

@@ -5,7 +5,6 @@ import com.marquesdev.stock.dto.ClientRequestDto;
 import com.marquesdev.stock.dto.ClientResponseDto;
 import com.marquesdev.stock.dto.ClientUpdatRequestDto;
 import com.marquesdev.stock.entity.Client;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
