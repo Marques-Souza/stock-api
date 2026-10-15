@@ -15,6 +15,7 @@ app:
       clients: /api/v1/clients
       suppliers: /api/v1/suppliers
       categories: /api/v1/categories
+      products: /api/v1/products
 
   upload:
     images: ./uploads
