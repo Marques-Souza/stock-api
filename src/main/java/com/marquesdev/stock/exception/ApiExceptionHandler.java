@@ -23,7 +23,12 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage( request, HttpStatus.FORBIDDEN, ex.getMessage()));
     }
-    @ExceptionHandler({EmailUniqueException.class, CnpjUniqueException.class, CategoryAlreadyExistsException.class})
+    @ExceptionHandler({
+            EmailUniqueException.class,
+            CnpjUniqueException.class,
+            CategoryAlreadyExistsException.class,
+            ProductAlreadyExistsException.class
+    })
     public ResponseEntity<ErrorMessage>uniqueException(RuntimeException ex,
                                                                  HttpServletRequest request){
         log.error("Api Error", ex);
@@ -52,6 +57,16 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage( request, HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidImageException.class)
+    public ResponseEntity<ErrorMessage> invalidImageException(InvalidImageException ex,
+                                                               HttpServletRequest request){
+        log.error("Api Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
 
     @ExceptionHandler(PasswordInvalidException.class)

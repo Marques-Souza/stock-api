@@ -2,7 +2,7 @@ package com.marquesdev.stock.controller;
 
 import com.marquesdev.stock.dto.ClientRequestDto;
 import com.marquesdev.stock.dto.ClientResponseDto;
-import com.marquesdev.stock.dto.ClientUpdatRequestDto;
+import com.marquesdev.stock.dto.ClientUpdateRequestDto;
 import com.marquesdev.stock.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -53,8 +52,8 @@ public class ClientController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<ClientResponseDto> updateClient(@PathVariable UUID id, @RequestBody @Valid ClientUpdatRequestDto clientUpdatRequestDto){
-        ClientResponseDto client = clientService.updateClient(id, clientUpdatRequestDto);
+    public ResponseEntity<ClientResponseDto> updateClient(@PathVariable UUID id, @RequestBody @Valid ClientUpdateRequestDto clientUpdateRequestDto){
+        ClientResponseDto client = clientService.updateClient(id, clientUpdateRequestDto);
         return ResponseEntity.ok(client);
 
     }

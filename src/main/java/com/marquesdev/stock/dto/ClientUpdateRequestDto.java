@@ -1,10 +1,9 @@
 package com.marquesdev.stock.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-public record ClientUpdatRequestDto(
+public record ClientUpdateRequestDto(
 
 
         @Size(min = 3, max = 100, message = "Name must be between 3 and 100 characters.")

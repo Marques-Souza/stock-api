@@ -33,7 +33,8 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @Operation(summary = "Create a new category",
+    @Operation(
+            summary = "Create a new category",
             description = "Creates a category with its image. Accessible by admins only.",
             security = @SecurityRequirement(name = "security"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -48,14 +49,38 @@ public class CategoryController {
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Category created successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponseDto.class))),
-                    @ApiResponse(responseCode = "403", description = "User not authorized",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "409", description = "A category with this name already exists",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Invalid category fields",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Category created successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CategoryResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "User not authorized",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "A category with this name already exists",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Invalid category fields",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    )
             }
     )
     @PostMapping
@@ -63,31 +88,137 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> create(
             @ModelAttribute @Valid CategoryRequestDto categoryRequestDto,
             @RequestPart("file") MultipartFile file) {
-
         CategoryResponseDto category = categoryService.create(categoryRequestDto, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(category);
     }
 
-    @Operation(summary = "Update a category",
+    @Operation(
+            summary = "Retrieve a category by ID",
+            description = "Retrieves a category by its ID. Accessible by admins and attendants.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Category retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CategoryResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "User not authorized",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Category not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
+    public ResponseEntity<CategoryResponseDto> findById(@PathVariable UUID id) {
+        CategoryResponseDto category = categoryService.findById(id);
+        return ResponseEntity.ok(category);
+    }
+
+    @Operation(
+            summary = "Retrieve categories with pagination",
+            description = "Lists categories with pagination and an optional name search. Accessible by admins and attendants. " +
+                    "Use the 'search' header to filter by category name. Default pagination: page=0, size=10, sort=name.",
+            security = @SecurityRequirement(name = "security"),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Categories retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(
+                                            schema = @Schema(implementation = CategoryResponseDto.class)
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "User not authorized",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
+    public ResponseEntity<Page<CategoryResponseDto>> findAll(
+            @RequestHeader(value = "search", required = false) String search,
+            @PageableDefault(page = 0, size = 10, sort = "name") Pageable pageable) {
+        Page<CategoryResponseDto> categories = categoryService.findAll(search, pageable);
+        return ResponseEntity.ok(categories);
+    }
+
+    @Operation(
+            summary = "Update a category",
             description = "Updates category fields and optionally replaces its image. Accessible by admins only.",
             security = @SecurityRequirement(name = "security"),
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     content = @Content(
                             mediaType = "multipart/form-data",
-                            schema = @Schema(implementation = CategoryMultipartForm.class, type = "object")
+                            schema = @Schema(
+                                    implementation = CategoryMultipartForm.class,
+                                    type = "object"
+                            )
                     )
             ),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Category updated successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponseDto.class))),
-                    @ApiResponse(responseCode = "403", description = "User not authorized",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404", description = "Category not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "409", description = "A category with this name already exists",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Invalid category fields",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Category updated successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = CategoryResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "User not authorized",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Category not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "A category with this name already exists",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Invalid category fields",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class)
+                            )
+                    )
             }
     )
     @PutMapping("/{id}")
@@ -96,50 +227,8 @@ public class CategoryController {
             @PathVariable UUID id,
             @ModelAttribute @Valid CategoryUpdateDto categoryUpdateDto,
             @RequestPart(value = "file", required = false) MultipartFile file) {
-
         CategoryResponseDto category = categoryService.update(id, categoryUpdateDto, file);
         return ResponseEntity.ok(category);
-    }
-
-    @Operation(summary = "Retrieve a category by ID",
-            description = "Retrieves a category by its ID. Accessible by admins and attendants.",
-            security = @SecurityRequirement(name = "security"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Category retrieved successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = CategoryResponseDto.class))),
-                    @ApiResponse(responseCode = "403", description = "User not authorized",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404", description = "Category not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            }
-    )
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
-    public ResponseEntity<CategoryResponseDto> findById(@PathVariable UUID id){
-        CategoryResponseDto category = categoryService.findById(id);
-        return ResponseEntity.ok(category);
-    }
-
-    @Operation(summary = "Retrieve categories with pagination",
-            description = "Lists categories with pagination and an optional name search. Accessible by admins and attendants. " +
-                    "Use the 'search' header to filter by category name. Default pagination: page=0, size=10, sort=name.",
-            security = @SecurityRequirement(name = "security"),
-            responses = {
-                    @ApiResponse(responseCode = "200", description = "Categories retrieved successfully",
-                            content = @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = CategoryResponseDto.class)))),
-                    @ApiResponse(responseCode = "403", description = "User not authorized",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            }
-    )
-    @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
-    public ResponseEntity<Page<CategoryResponseDto>> findAll(
-            @RequestHeader(value = "search", required = false) String search,
-            @PageableDefault(page = 0, size = 10, sort = "name") Pageable pageable
-    ){
-        Page<CategoryResponseDto> categories = categoryService.findAll(search, pageable);
-        return  ResponseEntity.ok(categories);
-
     }
 
     @Schema(name = "CategoryMultipartForm")

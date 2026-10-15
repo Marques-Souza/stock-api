@@ -18,7 +18,6 @@ import java.util.UUID;
 @Entity
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Client {
 

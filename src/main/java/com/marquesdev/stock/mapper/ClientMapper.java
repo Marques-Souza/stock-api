@@ -3,7 +3,7 @@ package com.marquesdev.stock.mapper;
 import com.marquesdev.stock.ResourceUrlBuilder.ResourceUrlBuilder;
 import com.marquesdev.stock.dto.ClientRequestDto;
 import com.marquesdev.stock.dto.ClientResponseDto;
-import com.marquesdev.stock.dto.ClientUpdatRequestDto;
+import com.marquesdev.stock.dto.ClientUpdateRequestDto;
 import com.marquesdev.stock.entity.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +41,7 @@ public class ClientMapper {
         );
     }
 
-   public void updateClient(ClientUpdatRequestDto dto, Client client){
+   public void updateClient(ClientUpdateRequestDto dto, Client client){
        if (dto.name() != null) client.setName(dto.name());
        if (dto.email() != null) client.setEmail(dto.email());
        if (dto.phone() != null) client.setPhone(dto.phone());

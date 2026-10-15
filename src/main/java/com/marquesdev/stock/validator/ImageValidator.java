@@ -1,5 +1,6 @@
 package com.marquesdev.stock.validator;
 
+import com.marquesdev.stock.exception.InvalidImageException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
@@ -23,13 +24,13 @@ public class ImageValidator {
 
     public void validate(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Image must not be empty.");
+            throw new InvalidImageException("Image must not be empty.");
         }
         if (file.getSize() > maxSize.toBytes()) {
-            throw new IllegalArgumentException("Image must not exceed " + maxSize + ".");
+            throw new InvalidImageException("Image must not exceed " + maxSize + ".");
         }
         if (file.getContentType() == null || !allowedContentTypes.contains(file.getContentType())) {
-            throw new IllegalArgumentException("Unsupported image format.");
+            throw new InvalidImageException("Unsupported image format.");
         }
     }
 }

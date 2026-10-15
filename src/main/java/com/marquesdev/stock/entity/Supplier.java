@@ -18,7 +18,6 @@ import java.util.UUID;
 @Table(name = "suppliers")
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Supplier {
 

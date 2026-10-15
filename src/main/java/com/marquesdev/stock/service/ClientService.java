@@ -2,7 +2,7 @@ package com.marquesdev.stock.service;
 
 import com.marquesdev.stock.dto.ClientRequestDto;
 import com.marquesdev.stock.dto.ClientResponseDto;
-import com.marquesdev.stock.dto.ClientUpdatRequestDto;
+import com.marquesdev.stock.dto.ClientUpdateRequestDto;
 import com.marquesdev.stock.entity.Client;
 import com.marquesdev.stock.exception.CnpjUniqueException;
 import com.marquesdev.stock.exception.EmailUniqueException;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -59,11 +58,11 @@ public class ClientService {
     }
 
     @Transactional
-    public ClientResponseDto updateClient(UUID id, @Valid ClientUpdatRequestDto clientUpdatRequestDto) {
+    public ClientResponseDto updateClient(UUID id, @Valid ClientUpdateRequestDto clientUpdateRequestDto) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Client not found"));
 
-        clientMapper.updateClient(clientUpdatRequestDto, client);
+        clientMapper.updateClient(clientUpdateRequestDto, client);
         Client updatedClient = clientRepository.save(client);
         return clientMapper.toDto(updatedClient);
 
