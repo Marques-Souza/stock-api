@@ -54,11 +54,11 @@ public class UserController {
             description = "Endpoint to get user by ID (Bearer token required)",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "202", description = "User retrieved successfully",
+                    @ApiResponse(responseCode = "200", description = "User retrieved successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "403", description = "User not authorized",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "409", description = "User not found",
+                    @ApiResponse(responseCode = "404", description = "User not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
