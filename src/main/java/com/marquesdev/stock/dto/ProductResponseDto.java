@@ -13,6 +13,7 @@ public record ProductResponseDto(
         Integer quantity,
         BigDecimal unitPrice,
         Integer minimumStock,
+        boolean lowStock,
         String url,
         String imageUrl
 ) {

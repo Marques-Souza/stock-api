@@ -25,7 +25,7 @@ spring:
       path: /docs-stock.html
     api-docs:
       path: /docs-stock
-    packages-to-scan: com.marquesdev.controller
+    packages-to-scan: com.marquesdev.stock.controller
 
 ## API Endpoint configuration
 app:
@@ -37,6 +37,7 @@ app:
       suppliers: /api/v1/suppliers
       categories: /api/v1/categories
       products: /api/v1/products
+      stock-movements: /api/v1/stock-movements
 
   ## Image upload configuration
   upload:

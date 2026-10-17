@@ -27,7 +27,8 @@ public class ApiExceptionHandler {
             EmailUniqueException.class,
             CnpjUniqueException.class,
             CategoryAlreadyExistsException.class,
-            ProductAlreadyExistsException.class
+            ProductAlreadyExistsException.class,
+            InsufficientStockException.class
     })
     public ResponseEntity<ErrorMessage>uniqueException(RuntimeException ex,
                                                                  HttpServletRequest request){
@@ -47,6 +48,16 @@ public class ApiExceptionHandler {
                 .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage( request, HttpStatus.UNPROCESSABLE_ENTITY, "Invalid fields", ex.getBindingResult()));
+    }
+
+    @ExceptionHandler(InvalidStockMovementException.class)
+    public ResponseEntity<ErrorMessage> invalidStockMovementException(InvalidStockMovementException ex,
+                                                                        HttpServletRequest request){
+        log.error("Api Error", ex);
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage()));
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

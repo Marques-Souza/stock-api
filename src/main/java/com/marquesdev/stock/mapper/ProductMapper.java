@@ -43,6 +43,7 @@ public class ProductMapper {
                 product.getQuantity(),
                 product.getUnitPrice(),
                 product.getMinimumStock(),
+                product.getQuantity() <= product.getMinimumStock(),
                 resourceUrlBuilder.build(productEndpoint, product.getId()),
                 resourceUrlBuilder.buildImageUrl(product.getImageUrl())
         );

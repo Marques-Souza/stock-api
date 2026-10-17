@@ -1,5 +1,7 @@
 package com.marquesdev.stock.entity;
 
+import com.marquesdev.stock.exception.InsufficientStockException;
+import com.marquesdev.stock.exception.InvalidStockMovementException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -95,6 +97,26 @@ public class Product {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public void addQuantity(int amount){
+        if (amount <= 0){
+            throw new InvalidStockMovementException("Quantity must be greater than zero.");
+        }
+        this.quantity += amount;
+    }
+
+    public void removeQuantity(int amount){
+        if (amount <= 0){
+            throw new InvalidStockMovementException("Quantity must be greater than zero.");
+        }
+        if (amount > this.quantity){
+            throw  new InsufficientStockException("Insufficient stock.");
+        }
+        this.quantity -= amount;
+    }
+
+
+
 
     @Override
     public boolean equals(Object o) {

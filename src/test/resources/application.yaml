@@ -16,6 +16,7 @@ app:
       suppliers: /api/v1/suppliers
       categories: /api/v1/categories
       products: /api/v1/products
+      stock-movements: /api/v1/stock-movements
 
   upload:
     images: ./uploads
