@@ -97,15 +97,15 @@ As credenciais do banco e outras configurações ficam em variáveis de ambiente
 
 ## Usuário de demonstração
 
-Para testar a API, tem um usuário criado via script SQL:
+Quando a API sobe pela primeira vez, um usuário admin é criado automaticamente:
 
-- **E-mail:** `support@gmail.com`
-- **Senha:** `123456`
+- **E-mail:** `admin@stock.com`
+- **Senha:** `admin123`
 - **Perfil:** `ADMIN`
 
-> Cuidado: essas credenciais são só para testes locais. Não use em produção.
+> Cuidado: essas credenciais são só para testes. Mude a senha em produção.
 
-Use esse usuário no endpoint de login para pegar o token JWT.
+Use esse usuário no endpoint de login para pegar o token JWT e depois criar outros usuários.
 
 ## Como rodar
 
