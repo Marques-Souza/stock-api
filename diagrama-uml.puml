@@ -1,0 +1,606 @@
+@startuml Stock System UML Diagram
+
+skinparam packageStyle rectangle
+skinparam backgroundColor white
+skinparam defaultFontName Arial
+skinparam defaultFontSize 12
+
+title Diagrama UML - Sistema de Controle de Estoque
+
+' =====================
+' ENTITIES
+' =====================
+
+package "com.marquesdev.stock.entity" {
+
+  class Category {
+    - id: UUID
+    - name: String
+    - description: String
+    - imageUrl: String
+    - createdAt: LocalDateTime
+    - modifiedAt: LocalDateTime
+    - createdBy: String
+    - modifiedBy: String
+    + getId(): UUID
+    + getName(): String
+    + getDescription(): String
+    + setImageUrl(String): void
+    + setName(String): void
+    + setDescription(String): void
+  }
+
+  class Product {
+    - id: UUID
+    - name: String
+    - description: String
+    - code: String
+    - quantity: Integer
+    - unitPrice: BigDecimal
+    - minimumStock: Integer
+    - imageUrl: String
+    - createdAt: LocalDateTime
+    - modifiedAt: LocalDateTime
+    - createdBy: String
+    - modifiedBy: String
+    + addQuantity(int): void
+    + removeQuantity(int): void
+    + setCategory(Category): void
+    + setCode(String): void
+    + setUnitPrice(BigDecimal): void
+  }
+
+  class StockMovement {
+    - id: UUID
+    - type: Type
+    - quantity: Integer
+    - unitPrice: BigDecimal
+    - note: String
+    - movementCode: String
+    - createdAt: LocalDateTime
+    - createdBy: String
+    + setProduct(Product): void
+    + setType(Type): void
+    + setSupplier(Supplier): void
+    + setClient(Client): void
+  }
+
+  class Client {
+    - id: UUID
+    - name: String
+    - cnpj: String
+    - email: String
+    - phone: String
+    - createdAt: LocalDateTime
+    - modifiedAt: LocalDateTime
+    - createdBy: String
+    - modifiedBy: String
+    + setName(String): void
+    + setCnpj(String): void
+    + setEmail(String): void
+    + setPhone(String): void
+  }
+
+  class Supplier {
+    - id: UUID
+    - name: String
+    - cnpj: String
+    - email: String
+    - phone: String
+    - createdAt: LocalDateTime
+    - modifiedAt: LocalDateTime
+    - createdBy: String
+    - modifiedBy: String
+    + setName(String): void
+    + setCnpj(String): void
+    + setEmail(String): void
+    + setPhone(String): void
+  }
+
+  class User {
+    - id: UUID
+    - email: String
+    - password: String
+    - profile: Profile
+    - createdAt: LocalDateTime
+    - modifiedAt: LocalDateTime
+    - createdBy: String
+    - modifiedBy: String
+    + setEmail(String): void
+    + setPassword(String): void
+    + setProfile(Profile): void
+  }
+
+}
+
+' =====================
+' ENUMS
+' =====================
+
+package "com.marquesdev.stock.enums" {
+
+  enum Profile {
+    {field} ADMIN
+    {field} ATTENDANT
+  }
+
+  enum Type {
+    {field} ENTRY
+    {field} EXIT
+  }
+
+}
+
+' =====================
+' RELATIONSHIPS
+' =====================
+
+' Product -> Category (ManyToOne)
+Category "1" -- "many" Product : category_id
+
+' StockMovement -> Product (ManyToOne)
+Product "1" -- "many" StockMovement : product_id
+
+' StockMovement -> Supplier (ManyToOne)
+Supplier "0..1" -- "many" StockMovement : supplier_id
+
+' StockMovement -> Client (ManyToOne)
+Client "0..1" -- "many" StockMovement : client_id
+
+' User -> Profile (Enumerated)
+User -- Profile : profile
+
+' StockMovement -> Type (Enumerated)
+StockMovement -- Type : type
+
+' =====================
+' SERVICES
+' =====================
+
+package "com.marquesdev.stock.service" {
+
+  class ProductService {
+    + createProduct(dto, userId): ProductResponseDto
+    + findAllProducts(): List<ProductResponseDto>
+    + findProductById(id, userId): ProductResponseDto
+    + updateProduct(id, dto, userId): ProductResponseDto
+    + deleteProduct(id): void
+  }
+
+  class StockMovementService {
+    + createMovement(dto, userId): StockMovementResponseDto
+    + findAllMovements(): List<StockMovementResponseDto>
+    + findMovementById(id): StockMovementResponseDto
+    + findByCode(code): StockMovementResponseDto
+  }
+
+  class CategoryService {
+    + createCategory(dto, userId): CategoryResponseDto
+    + findAllCategories(): List<CategoryResponseDto>
+    + findCategoryById(id): CategoryResponseDto
+    + updateCategory(id, dto, userId): CategoryResponseDto
+    + deleteCategory(id): void
+  }
+
+  class ClientService {
+    + createClient(dto, userId): ClientResponseDto
+    + findAllClients(): List<ClientResponseDto>
+    + findClientById(id): ClientResponseDto
+    + updateClient(id, dto, userId): ClientResponseDto
+    + deleteClient(id): void
+  }
+
+  class SupplierService {
+    + createSupplier(dto, userId): SupplierResponseDto
+    + findAllSuppliers(): List<SupplierResponseDto>
+    + findSupplierById(id): SupplierResponseDto
+    + updateSupplier(id, dto, userId): SupplierResponseDto
+    + deleteSupplier(id): void
+  }
+
+  class UserService {
+    + createUser(dto): UserResponseDto
+    + findAllUsers(): List<UserResponseDto>
+    + findUserById(id): UserResponseDto
+    + findProfileByEmail(email): Profile
+    + updateUserPassword(email, dto): void
+  }
+
+  class ImageService {
+    + uploadImage(file, entityClass, id): String
+    + deleteImage(imageUrl): void
+  }
+
+  class ReportService {
+    + generateStockMovementReport(from, to): byte[]
+  }
+
+}
+
+' =====================
+' CONTROLLERS
+' =====================
+
+package "com.marquesdev.stock.controller" {
+
+  class ProductController {
+    + createProduct(requestDto, userId): ResponseEntity<ProductResponseDto>
+    + findAllProducts(): ResponseEntity<List<ProductResponseDto>>
+    + findProductById(id, userId): ResponseEntity<ProductResponseDto>
+    + updateProduct(id, requestDto, userId): ResponseEntity<ProductResponseDto>
+    + deleteProduct(id): ResponseEntity<Void>
+  }
+
+  class StockMovementController {
+    + createMovement(requestDto, userId): ResponseEntity<StockMovementResponseDto>
+    + findAllMovements(): ResponseEntity<List<StockMovementResponseDto>>
+    + findMovementById(id): ResponseEntity<StockMovementResponseDto>
+    + findByCode(code): ResponseEntity<StockMovementResponseDto>
+  }
+
+  class CategoryController {
+    + createCategory(requestDto, userId): ResponseEntity<CategoryResponseDto>
+    + findAllCategories(): ResponseEntity<List<CategoryResponseDto>>
+    + findCategoryById(id): ResponseEntity<CategoryResponseDto>
+    + updateCategory(id, updateDto, userId): ResponseEntity<CategoryResponseDto>
+    + deleteCategory(id): ResponseEntity<Void>
+  }
+
+  class ClientController {
+    + createClient(requestDto, userId): ResponseEntity<ClientResponseDto>
+    + findAllClients(): ResponseEntity<List<ClientResponseDto>>
+    + findClientById(id): ResponseEntity<ClientResponseDto>
+    + updateClient(id, updateDto, userId): ResponseEntity<ClientResponseDto>
+    + deleteClient(id): ResponseEntity<Void>
+  }
+
+  class SupplierController {
+    + createSupplier(requestDto, userId): ResponseEntity<SupplierResponseDto>
+    + findAllSuppliers(): ResponseEntity<List<SupplierResponseDto>>
+    + findSupplierById(id): ResponseEntity<SupplierResponseDto>
+    + updateSupplier(id, updateDto, userId): ResponseEntity<SupplierResponseDto>
+    + deleteSupplier(id): ResponseEntity<Void>
+  }
+
+  class UserController {
+    + createUser(requestDto): ResponseEntity<UserResponseDto>
+    + findAllUsers(): ResponseEntity<List<UserResponseDto>>
+    + findUserById(id): ResponseEntity<UserResponseDto>
+    + updateUserPassword(email, requestDto): ResponseEntity<Void>
+  }
+
+  class AuthenticationController {
+    + login(loginDto): ResponseEntity<JwtToken>
+  }
+
+  class ReportController {
+    + generateStockMovementReport(from, to): ResponseEntity<byte[]>
+  }
+
+}
+
+' =====================
+' REPOSITORIES
+' =====================
+
+package "com.marquesdev.stock.repository" {
+
+  interface ProductRepository {
+    {interface} extends JpaRepository<Product, UUID>
+  }
+
+  interface StockMovementRepository {
+    {interface} extends JpaRepository<StockMovement, UUID>
+    + nextMovementCode(): long
+  }
+
+  interface CategoryRepository {
+    {interface} extends JpaRepository<Category, UUID>
+  }
+
+  interface ClientRepository {
+    {interface} extends JpaRepository<Client, UUID>
+  }
+
+  interface SupplierRepository {
+    {interface} extends JpaRepository<Supplier, UUID>
+  }
+
+  interface UserRepository {
+    {interface} extends JpaRepository<User, UUID>
+  }
+
+}
+
+' =====================
+' MAPPERS
+' =====================
+
+package "com.marquesdev.stock.mapper" {
+
+  interface ProductMapper {
+    + toResponseDto(product, selfLink): ProductResponseDto
+    + toEntity(requestDto, category, imageUrl): Product
+  }
+
+  interface StockMovementMapper {
+    + toResponseDto(movement, selfLink): StockMovementResponseDto
+  }
+
+  interface CategoryMapper {
+    + toResponseDto(category, selfLink): CategoryResponseDto
+  }
+
+  interface ClientMapper {
+    + toResponseDto(client, selfLink): ClientResponseDto
+  }
+
+  interface SupplierMapper {
+    + toResponseDto(supplier, selfLink): SupplierResponseDto
+  }
+
+  interface UserMapper {
+    + toResponseDto(user, selfLink): UserResponseDto
+  }
+
+}
+
+' =====================
+' DTOs
+' =====================
+
+package "com.marquesdev.stock.dto" {
+
+  record ProductRequestDto {
+    {field} name: String
+    {field} description: String
+    {field} categoryId: UUID
+    {field} code: String
+    {field} unitPrice: BigDecimal
+    {field} minimumStock: Integer
+  }
+
+  record ProductResponseDto {
+    {field} id: UUID
+    {field} name: String
+    {field} code: String
+    {field} quantity: Integer
+    {field} unitPrice: BigDecimal
+    {field} selfLink: String
+  }
+
+  record StockMovementRequestDto {
+    {field} productId: UUID
+    {field} type: Type
+    {field} quantity: Integer
+    {field} unitPrice: BigDecimal
+    {field} supplierId: UUID
+    {field} clientId: UUID
+    {field} note: String
+  }
+
+  record StockMovementResponseDto {
+    {field} id: UUID
+    {field} product: ProductResponseDto
+    {field} type: Type
+    {field} quantity: Integer
+    {field} movementCode: String
+    {field} selfLink: String
+  }
+
+  record CategoryRequestDto {
+    {field} name: String
+    {field} description: String
+  }
+
+  record ClientRequestDto {
+    {field} name: String
+    {field} cnpj: String
+    {field} email: String
+    {field} phone: String
+  }
+
+  record SupplierRequestDto {
+    {field} name: String
+    {field} cnpj: String
+    {field} email: String
+    {field} phone: String
+  }
+
+  record UserRequestDto {
+    {field} email: String
+    {field} password: String
+    {field} profile: Profile
+  }
+
+  record UserLoginDto {
+    {field} email: String
+    {field} password: String
+  }
+
+}
+
+' =====================
+' JWT
+' =====================
+
+package "com.marquesdev.stock.jwt" {
+
+  class JwtUtils {
+    {field} JWT_BEARER: String
+    {field} JWT_AUTHORIZATION: String
+    - secretKey: String
+    + createToken(email, profile): JwtToken
+    + getEmail(token): String
+    + isTokenValid(token): boolean
+  }
+
+  class JwtAuthorizationFilter {
+    {field} extends OncePerRequestFilter
+    + doFilterInternal(request, response, chain): void
+  }
+
+  class JwtUserDetailsService {
+    {field} implements UserDetailsService
+    + loadUserByUsername(email): UserDetails
+    + getTokenAuthenticated(email): JwtToken
+  }
+
+  record JwtToken {
+    {field} token: String
+  }
+
+  class JwtUserDetails {
+    {field} extends UserDetails
+  }
+
+  class JwtAuthenticationEntryPoint {
+    {field} implements AuthenticationEntryPoint
+  }
+
+}
+
+' =====================
+' EXCEPTIONS
+' =====================
+
+package "com.marquesdev.stock.exception" {
+
+  class ApiExceptionHandler {
+    {field} extends ResponseEntityExceptionHandler
+    + handleEntityNotFoundException()
+    + handleProductAlreadyExistsException()
+    + handleInsufficientStockException()
+    + handleValidationExceptions()
+  }
+
+  abstract class EntityNotFoundException {
+    {abstract}
+  }
+
+  class ProductAlreadyExistsException {
+    *-- EntityNotFoundException
+  }
+
+  class InsufficientStockException {
+    *-- EntityNotFoundException
+  }
+
+  class InvalidStockMovementException {
+    *-- EntityNotFoundException
+  }
+
+  class CnpjUniqueException {
+    *-- EntityNotFoundException
+  }
+
+  class EmailUniqueException {
+    *-- EntityNotFoundException
+  }
+
+  class CategoryAlreadyExistsException {
+    *-- EntityNotFoundException
+  }
+
+  class InvalidImageException {
+  }
+
+  class PasswordInvalidException {
+  }
+
+}
+
+' =====================
+' CONFIG
+' =====================
+
+package "com.marquesdev.stock.config" {
+
+  class SpringSecurityConfig {
+    {field} @EnableMethodSecurity
+    + securityFilterChain(): SecurityFilterChain
+    + passwordEncoder(): PasswordEncoder
+  }
+
+  class SpringDocOpenApi {
+    + customOpenAPI(): OpenAPI
+  }
+
+  class SpringJpaAuditingConfig {
+    {field} @EnableJpaAuditing
+  }
+
+  class SpringTimezoneConfig {
+    {field} @Bean
+  }
+
+  class UploadResourceConfig {
+    {field} implements WebMvcConfigurer
+    + addResourceHandlers(registry): void
+  }
+
+}
+
+' =====================
+' CROSS-PACKAGE RELATIONSHIPS
+' =====================
+
+' Controllers use Services
+ProductController ..> ProductService
+StockMovementController ..> StockMovementService
+CategoryController ..> CategoryService
+ClientController ..> ClientService
+SupplierController ..> SupplierService
+UserController ..> UserService
+AuthenticationController ..> JwtUserDetailsService
+ReportController ..> ReportService
+
+' Services use Repositories
+ProductService ..> ProductRepository
+StockMovementService ..> StockMovementRepository
+CategoryService ..> CategoryRepository
+ClientService ..> ClientRepository
+SupplierService ..> SupplierRepository
+UserService ..> UserRepository
+
+' Services use Entities
+ProductService ..> Product
+StockMovementService ..> StockMovement
+CategoryService ..> Category
+ClientService ..> Client
+SupplierService ..> Supplier
+UserService ..> User
+
+' Mappers connect DTOs and Entities
+ProductMapper ..> Product
+ProductMapper ..> ProductResponseDto
+StockMovementMapper ..> StockMovement
+StockMovementMapper ..> StockMovementResponseDto
+CategoryMapper ..> Category
+ClientMapper ..> Client
+SupplierMapper ..> Supplier
+UserMapper ..> User
+
+' JWT relationships
+JwtAuthorizationFilter ..> JwtUtils
+JwtAuthorizationFilter ..> JwtUserDetailsService
+JwtUserDetailsService ..> JwtUtils
+JwtUserDetailsService ..> UserService
+AuthenticationController ..> JwtUtils
+
+' ImageService used by
+ProductService ..> ImageService
+CategoryService ..> ImageService
+
+legend right
+  | <b>Legenda</b> |
+  | --- | Associa��o |
+  | --> | Depend�ncia |
+  | *-- | Heran�a |
+  | --o | Composi��o |
+  | {field} | Campo est�tico/enum |
+  | {interface}| Interface |
+  | {abstract}| Classe abstrata |
+end legend
+
+@enduml

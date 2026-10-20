@@ -3,6 +3,7 @@ package com.marquesdev.stock.config;
 import com.marquesdev.stock.jwt.JwtAuthenticationEntryPoint;
 import com.marquesdev.stock.jwt.JwtAuthorizationFilter;
 import com.marquesdev.stock.jwt.JwtUserDetailsService;
+import com.marquesdev.stock.jwt.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -55,8 +56,8 @@ public class SpringSecurityConfig {
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter(JwtUserDetailsService detailsService){
-        return new JwtAuthorizationFilter(detailsService);
+    public JwtAuthorizationFilter jwtAuthorizationFilter(JwtUserDetailsService detailsService, JwtUtils jwtUtils){
+        return new JwtAuthorizationFilter(detailsService, jwtUtils);
     }
 
     @Bean

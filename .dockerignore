@@ -1,0 +1,15 @@
+target/
+.idea/
+*.iml
+.git/
+.gitignore
+*.log
+node_modules/
+.DS_Store
+*.class
+*.jar
+*.war
+*.ear
+uploads/
+*.swp
+*~
