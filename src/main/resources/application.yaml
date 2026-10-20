@@ -38,6 +38,7 @@ app:
       categories: /api/v1/categories
       products: /api/v1/products
       stock-movements: /api/v1/stock-movements
+      reports: /api/v1/reports
 
   ## Image upload configuration
   upload:

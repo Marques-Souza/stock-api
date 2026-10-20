@@ -64,7 +64,7 @@ public class ClientController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
     public ResponseEntity<ClientResponseDto> findById(@PathVariable UUID id){
         ClientResponseDto client = clientService.findById(id);
         return ResponseEntity.ok(client);
@@ -83,7 +83,7 @@ public class ClientController {
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('USER')")
+    @PreAuthorize("hasAuthority('ADMIN') OR hasAuthority('ATTENDANT')")
     public ResponseEntity<Page<ClientResponseDto>> findAll(
             @RequestHeader(value = "search", required = false)String search,
             @PageableDefault(page = 0, size = 10, sort = "name") Pageable pageable
