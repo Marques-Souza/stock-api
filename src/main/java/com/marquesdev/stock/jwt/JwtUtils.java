@@ -5,7 +5,10 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
@@ -14,30 +17,33 @@ import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class JwtUtils {
 
     public static final String JWT_BEARER = "Bearer ";
     public static final String JWT_AUTHORIZATION = "Authorization";
-    public static final String SECRET_KEY = "0123456789-0123456789-0123456789";
     public static final long EXPIRE_DAYS = 0;
     public static final long EXPIRE_HOURS = 0;
     public static final long EXPIRE_MINUTES = 30;
 
-    private JwtUtils(){
+    private final String secretKey;
 
+    public JwtUtils(@Value("${jwt.secret}") String secretKey){
+        this.secretKey = secretKey;
     }
 
-    private static Key generateKey(){
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    private Key generateKey(){
+        return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 
-    private static Date toExpireDate(Date start){
+    private Date toExpireDate(Date start){
         LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime end = dateTime.plusDays(EXPIRE_DAYS).plusHours(EXPIRE_HOURS).plusMinutes(EXPIRE_MINUTES);
         return Date.from(end.atZone(ZoneId.systemDefault()).toInstant());
     }
 
-    public static JwtToken createToken(String email, String profile){
+    public JwtToken createToken(String email, String profile){
         Date issuedAt = new Date();
         Date limit = toExpireDate(issuedAt);
 
@@ -53,7 +59,7 @@ public class JwtUtils {
         return new JwtToken(token);
     }
 
-   private static Claims getClaimsToken(String token){
+   private Claims getClaimsToken(String token){
 
         try {
             return Jwts.parser()
@@ -68,11 +74,11 @@ public class JwtUtils {
         return  null;
    }
 
-   public static String getEmail(String token){
+   public String getEmail(String token){
         return getClaimsToken(token).getSubject();
    }
 
-   public static boolean isTokenValid(String token){
+   public boolean isTokenValid(String token){
         try {
             Jwts.parser()
                     .setSigningKey(generateKey()).build()
@@ -85,7 +91,7 @@ public class JwtUtils {
    }
 
 
-   private static String refactorToken(String token){
+   private String refactorToken(String token){
         if (token.contains(JWT_BEARER)){
             return token.substring(JWT_BEARER.length());
         }

@@ -23,3 +23,7 @@ app:
     images: ./uploads
     max-size: 5MB
     allowed-content-types: image/jpeg, image/png, image/webp
+
+## JWT configuration
+jwt:
+  secret: 0123456789-0123456789-0123456789

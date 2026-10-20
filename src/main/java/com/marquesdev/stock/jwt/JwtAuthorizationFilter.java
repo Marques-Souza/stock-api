@@ -19,6 +19,7 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUserDetailsService detailsService;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -29,13 +30,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!JwtUtils.isTokenValid(token)){
+        if (!jwtUtils.isTokenValid(token)){
             log.warn("JWT is invalid.");
             filterChain.doFilter(request, response);
             return;
         }
 
-        String email = JwtUtils.getEmail(token);
+        String email = jwtUtils.getEmail(token);
         toAuthentication(request, email);
         filterChain.doFilter(request, response);
     }

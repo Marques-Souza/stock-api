@@ -15,6 +15,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 
 
     private final UserService userService;
+    private final JwtUtils jwtUtils;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -24,6 +25,6 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public JwtToken getTokenAuthenticated(String email){
         Profile profile = userService.findProfileByEmail(email);
-        return JwtUtils.createToken(email, profile.name());
+        return jwtUtils.createToken(email, profile.name());
     }
 }
