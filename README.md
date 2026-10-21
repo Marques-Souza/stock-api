@@ -1,170 +1,200 @@
-# Sistema de Controle de Estoque
+# Controle de Estoque
 
-API REST feita com Java 21 e Spring Boot 4.0.8 para gerenciar um sistema de controle de estoque.
+Este projeto é uma API para cuidar do dia a dia de um estoque: cadastrar produtos, organizar categorias, manter clientes e fornecedores e registrar entradas e saídas. Também dá para gerar um relatório em PDF com as movimentações.
 
-Desenvolvi esse projeto para praticar Spring Boot na prática: autenticação com JWT, CRUD de produtos e clientes, movimentação de estoque, upload de imagens, relatórios em PDF e testes de integração.
+Fiz o projeto para praticar Java e Spring Boot em uma aplicação mais completa, incluindo autenticação, banco de dados, upload de imagens e testes de integração.
+
+## O que a API faz
+
+- Mantém produtos, categorias, clientes, fornecedores e usuários.
+- Registra entradas e saídas de produtos e atualiza a quantidade disponível.
+- Exige um fornecedor na entrada e um cliente na saída.
+- Impede uma saída maior que o estoque disponível.
+- Permite enviar imagens para produtos e categorias. São aceitos JPEG, PNG e WebP, com limite de 5 MB.
+- Gera um relatório PDF das movimentações, com filtros por tipo, período e código do produto.
+- Registra informações de auditoria, como quem criou ou alterou os dados.
 
 ## Tecnologias
 
-- Java 21
-- Spring Boot 4.0.8
-- Spring Data JPA / Hibernate
-- Spring Security com JWT
+- Java 21 e Spring Boot 4
+- Spring Web MVC, Spring Data JPA e Hibernate
+- Spring Security e JWT
+- PostgreSQL; H2 disponível para testes
 - Bean Validation
-- Records (DTOs imutáveis)
-- PostgreSQL
-- H2 (para testes)
-- Docker & Docker Compose
-- Swagger/OpenAPI (SpringDoc)
-- JasperReports
-- JUnit + WebTestClient
-- Lombok
-- Maven
+- Swagger / OpenAPI
+- JasperReports para gerar PDFs
+- Maven, Lombok e Docker Compose
 
-## Modelo de Dados
+## Modelo de dados
 
-O diagrama abaixo mostra as entidades principais e os relacionamentos entre elas:
+O diagrama mostra as entidades e os relacionamentos principais:
 
-![Diagrama de Entidades](docs/diagrama-entidades.png)
+![Diagrama de entidades](docs/diagrama-entidades.png)
 
-Entidades e relacionamentos principais:
-
-- **Product** — produtos com controle de quantidade e upload de imagem. Cada produto pertence a uma **Category** e a um **Supplier**.
-- **Category** — categorias para organizar os produtos. Uma categoria pode ter vários produtos.
-- **StockMovement** — movimentações de entrada e saída de estoque com código sequencial. Cada movimentação está vinculada a um **Product** e a um **Client**.
-- **Client** — clientes que podem ter várias movimentações de estoque associadas.
-- **Supplier** — fornecedores vinculados aos produtos.
-- **User** — usuários do sistema com controle de acesso por perfil (ADMIN ou ATTENDANT).
+Um produto pertence a uma categoria. Cada movimentação está ligada a um produto e pode estar associada a um fornecedor ou cliente: entradas usam fornecedor; saídas usam cliente. Os usuários têm um dos perfis disponíveis: `ADMIN` ou `ATTENDANT`.
 
 ## Autenticação
 
-A API usa Spring Security com JWT. Existem dois perfis:
+Quase todas as rotas precisam de um token JWT. Para obtê-lo, envie e-mail e senha para `POST /api/v1/auth`. Depois, informe o token no Swagger pelo botão **Authorize** ou envie-o no cabeçalho HTTP `Authorization`, usando o esquema `Bearer`.
 
-- `ADMIN`
-- `ATTENDANT`
+O perfil `ADMIN` pode cadastrar e editar dados e gerenciar usuários. O `ATTENDANT` pode consultar os cadastros e registrar movimentações. As permissões de cada rota estão detalhadas no Swagger.
 
-Alguns endpoints são restritos por perfil.
+No ambiente local, a aplicação cria um usuário administrador para facilitar os testes:
 
-## Documentação da API
+- E-mail: `admin@stock.com`
+- Senha: `admin123`
 
-Depois de subir a aplicação, acesse o Swagger em:
+Esses dados são apenas para desenvolvimento. Troque a senha e defina um valor próprio para `JWT_SECRET` antes de usar a aplicação em outro ambiente.
 
-`http://localhost:8080/docs-stock.html`
+## Rodando localmente
 
-Lá dá para ver e testar todos os endpoints.
+Você vai precisar de Java 21 e PostgreSQL. O Maven Wrapper já está no projeto, então não é necessário instalar o Maven separadamente.
 
-## Relatórios
-
-O projeto gera relatórios em PDF com JasperReports. Por enquanto tem:
-
-- **Movimentações de Estoque** — PDF com as entradas e saídas de estoque
-
-## Testes
-
-Os testes E2E cobrem os principais fluxos da API:
-
-- Login e geração de token JWT
-- Produtos (CRUD + upload de imagem)
-- Categorias, clientes e fornecedores (CRUD)
-- Movimentações de estoque (entrada e saída)
-- Gerenciamento de usuários
-- Geração de relatórios em PDF
-
-## Pré-requisitos
-
-- Java 21+
-- PostgreSQL
-- Git
-- Docker e Docker Compose (opcional)
-- Maven (ou use o Maven Wrapper do projeto)
-
-## Banco de Dados
-
-Por padrão, a aplicação usa PostgreSQL:
-
-- **Database:** `stock_api`
-- **Username:** `postgres`
-- **Password:** `postgres`
-- **Port:** `5432`
-
-As credenciais do banco e outras configurações ficam em variáveis de ambiente:
-
-- `DB_URL`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `JWT_SECRET`
-- `IMAGE_UPLOAD_DIR`
-
-## Usuário de demonstração
-
-Quando a API sobe pela primeira vez, um usuário admin é criado automaticamente:
-
-- **E-mail:** `admin@stock.com`
-- **Senha:** `admin123`
-- **Perfil:** `ADMIN`
-
-> Cuidado: essas credenciais são só para testes. Mude a senha em produção.
-
-Use esse usuário no endpoint de login para pegar o token JWT e depois criar outros usuários.
-
-## Como rodar
-
-1. Clone o repositório:
+Clone o repositório e entre na pasta da aplicação:
 
 ```bash
-git clone https://github.com/Marques-Souza/stock.git
-cd stock
+git clone https://github.com/Marques-Souza/stock-api.git
+cd stock-api/stock
 ```
 
-2. Configure as variáveis de ambiente (`DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`) na sua IDE ou no sistema operacional.
+Por padrão, a aplicação tenta se conectar a um PostgreSQL local com estes dados:
 
-3. Rode a aplicação:
+| Configuração | Valor padrão |
+| --- | --- |
+| Banco | `stock_api` |
+| Usuário | `postgres` |
+| Senha | `postgres` |
+| Porta | `5432` |
+
+Crie o banco `stock_api` antes de iniciar a aplicação. Se o seu PostgreSQL usar outros dados, configure as variáveis de ambiente descritas mais abaixo.
+
+No Linux ou macOS, inicie com:
 
 ```bash
-cd stock
 ./mvnw spring-boot:run
 ```
 
-4. Acesse o Swagger:
+No Windows, use:
 
-`http://localhost:8080/docs-stock.html`
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
 ## Rodando com Docker
 
+O `docker-compose.yml` sobe a API e um PostgreSQL já configurado para ela. Execute os comandos dentro da pasta `stock`:
+
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
-Depois é só acessar `http://localhost:8080/docs-stock.html`.
+Quando os serviços estiverem prontos, a API estará disponível em `http://localhost:8080`. Para encerrar, use `docker compose down`.
 
-## Estrutura do projeto
+## Publicando no Render
 
+O Compose é para rodar os serviços juntos na sua máquina. No Render, crie um serviço **PostgreSQL** e um **Web Service** usando Docker, apontando o diretório raiz para `stock`. O Render vai construir a imagem com o `Dockerfile` dessa pasta.
+
+No Web Service, selecione o perfil `prod` e configure estas variáveis:
+
+| Variável | Valor |
+| --- | --- |
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+| `APP_BASE_URL` | URL pública HTTPS do Web Service, sem `/` no final |
+| `DB_URL` | `jdbc:postgresql://<host-interno-do-banco>:5432/<nome-do-banco>` |
+| `DB_USERNAME` | Usuário informado pelo PostgreSQL do Render |
+| `DB_PASSWORD` | Senha informada pelo PostgreSQL do Render |
+| `JWT_SECRET` | Segredo aleatório próprio, com pelo menos 32 caracteres |
+| `IMAGE_UPLOAD_DIR` | `/var/data/uploads` |
+
+Use o endereço interno do banco do Render em `DB_URL`, com o prefixo `jdbc:postgresql://`. Não use as credenciais do Docker Compose em produção.
+O Render informa a porta do serviço pela variável `PORT`; a aplicação usa essa porta automaticamente. Fora do Render, o valor padrão continua sendo `8080`.
+
+Para que as imagens não desapareçam em um novo deploy, adicione um **Persistent Disk** ao Web Service e monte-o em `/var/data`. Sem esse disco, uploads feitos pela API ficam no armazenamento temporário do serviço.
+
+O perfil `prod` não cria uma conta padrão. Para criar o primeiro administrador, configure temporariamente `BOOTSTRAP_ADMIN_ENABLED=true`, `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_PASSWORD` com credenciais fortes. Depois que a conta for criada, desative a opção (`BOOTSTRAP_ADMIN_ENABLED=false`) e remova a senha das variáveis do serviço.
+
+## Documentação e rotas
+
+Com a aplicação no ar, abra o Swagger em:
+
+`http://localhost:8080/docs-stock.html`
+
+As rotas principais ficam sob `/api/v1`:
+
+| Recurso | Caminho |
+| --- | --- |
+| Autenticação | `/auth` |
+| Usuários | `/users` |
+| Clientes | `/clients` |
+| Fornecedores | `/suppliers` |
+| Categorias | `/categories` |
+| Produtos | `/products` |
+| Movimentações | `/stock-movements` |
+| Relatórios | `/reports` |
+
+As listas de produtos, categorias, clientes e fornecedores aceitam paginação (`page`, `size` e `sort`) e o cabeçalho `search`. As movimentações também aceitam o cabeçalho `type`, com `ENTRY` ou `EXIT`.
+
+Para gerar um relatório, use `GET /api/v1/reports/stock-movements/pdf`. Os filtros disponíveis são `type`, `startDate`, `endDate` e `productCode`.
+
+## Configurações
+
+As configurações podem ser alteradas por variáveis de ambiente:
+
+| Variável | Para que serve |
+| --- | --- |
+| `DB_URL` | URL de conexão com o banco |
+| `DB_USERNAME` | Usuário do banco |
+| `DB_PASSWORD` | Senha do banco |
+| `JWT_SECRET` | Chave usada para assinar os tokens |
+| `IMAGE_UPLOAD_DIR` | Pasta onde as imagens enviadas são salvas |
+| `APP_BASE_URL` | Endereço público usado nos links retornados pela API |
+| `BOOTSTRAP_ADMIN_ENABLED` | Habilita a criação inicial do administrador |
+| `BOOTSTRAP_ADMIN_EMAIL` | E-mail desse administrador |
+| `BOOTSTRAP_ADMIN_PASSWORD` | Senha desse administrador |
+
+Sem essas variáveis, a aplicação usa os valores locais definidos em `src/main/resources/application.yaml`. Não use as credenciais e a chave padrão em produção.
+
+## Testes
+
+Os testes de integração estão em `src/test/java`. Para executá-los com o Maven Wrapper:
+
+```bash
+./mvnw "-Dtest=*IT" test
 ```
-stock/
-├── stock/                      # Módulo Spring Boot
+
+No Windows:
+
+```powershell
+.\mvnw.cmd "-Dtest=*IT" test
+```
+
+## Estrutura do repositório
+
+```text
+.
+├── docs/
+│   ├── diagrama-entidades.png
+│   └── relatorio_movimentacoes_estoque.sql
+├── stock/
 │   ├── src/main/java/com/marquesdev/stock/
-│   │   ├── config/             # Security, Swagger, Upload
-│   │   ├── controller/         # 8 controllers REST
-│   │   ├── dto/                # 19 DTOs (Records)
-│   │   ├── entity/             # 6 entidades JPA
-│   │   ├── enums/              # Profile, Type
-│   │   ├── exception/          # 11 exceptions customizadas
-│   │   ├── jwt/                # Autenticação JWT
-│   │   ├── mapper/             # 6 mappers
-│   │   ├── repository/         # 6 repositories JPA
-│   │   ├── service/            # 8 services
-│   │   ├── validator/          # Validadores customizados
-│   │   └── Application.java    # Classe principal
+│   │   ├── config/       # Configurações da aplicação
+│   │   ├── controller/   # Rotas REST
+│   │   ├── dto/          # Objetos de entrada e resposta
+│   │   ├── entity/       # Entidades do banco
+│   │   ├── exception/    # Exceções e respostas de erro
+│   │   ├── jwt/          # Autenticação e validação dos tokens
+│   │   ├── mapper/       # Conversão entre entidades e DTOs
+│   │   ├── repository/   # Acesso ao banco de dados
+│   │   ├── service/      # Regras da aplicação
+│   │   └── validator/    # Validação de imagens
 │   ├── src/main/resources/
-│   │   └── application.yaml    # Configuração
-│   ├── src/test/               # Testes E2E
+│   ├── src/test/         # Testes de integração
 │   ├── Dockerfile
 │   ├── docker-compose.yml
 │   └── pom.xml
-├── uploads/                    # Imagens enviadas
 └── README.md
 ```
 
 ## Licença
 
-Projeto desenvolvido por **Marques Souza** para fins de estudo e portfólio.
+Projeto desenvolvido por Marques Souza para estudo e portfólio.

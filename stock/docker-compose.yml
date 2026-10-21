@@ -24,11 +24,15 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/stock
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      JWT_SECRET: 0123456789-0123456789-0123456789
-      SPRING_PROFILES_ACTIVE: prod
+      APP_BASE_URL: http://localhost:8080
+      IMAGE_UPLOAD_DIR: /var/data/uploads
+      PORT: 8080
+    volumes:
+      - uploads_data:/var/data/uploads
     depends_on:
       postgres:
         condition: service_healthy
 
 volumes:
   postgres_data:
+  uploads_data:

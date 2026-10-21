@@ -1,3 +1,6 @@
+server:
+  port: ${PORT:8080}
+
 spring:
   application:
     name: stock
@@ -13,23 +16,28 @@ spring:
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
 
+  sql:
+    init:
+      mode: always
+
   ## JPA configuration
   jpa:
     show-sql: true
+    defer-datasource-initialization: true
     hibernate:
       ddl-auto: update
 
-  ## SpringDoc OpenApi Swagger configuration
-  springdoc:
-    swagger-ui:
-      path: /docs-stock.html
-    api-docs:
-      path: /docs-stock
-    packages-to-scan: com.marquesdev.stock.controller
+## SpringDoc OpenApi Swagger configuration
+springdoc:
+  swagger-ui:
+    path: /docs-stock.html
+  api-docs:
+    path: /docs-stock
+  packages-to-scan: com.marquesdev.stock.controller
 
 ## API Endpoint configuration
 app:
-  base-url: http://localhost:8080
+  base-url: ${APP_BASE_URL:http://localhost:8080}
   api:
     endpoints:
       users: /api/v1/users
@@ -45,6 +53,11 @@ app:
     images: ${IMAGE_UPLOAD_DIR:./uploads}
     max-size: 5MB
     allowed-content-types: image/jpeg, image/png, image/webp
+
+  bootstrap-admin:
+    enabled: ${BOOTSTRAP_ADMIN_ENABLED:true}
+    email: ${BOOTSTRAP_ADMIN_EMAIL:admin@stock.com}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:admin123}
 
 ## JWT configuration
 jwt:

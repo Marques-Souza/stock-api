@@ -1,0 +1,3 @@
+CREATE SEQUENCE IF NOT EXISTS stock_movement_code_seq
+    START WITH 1
+    INCREMENT BY 1;

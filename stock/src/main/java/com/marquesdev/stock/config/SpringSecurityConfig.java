@@ -28,6 +28,7 @@ public class SpringSecurityConfig {
     private static final String[] DOCUMENTATION_OPENAPI ={
             "/docs/index.html",
             "/docs-park.html", "/docs-park/**",
+            "/docs-stock", "/docs-stock/**",
             "/v3/api-docs/**",
             "/swagger-ui-custom.html", "/swagger-ui.html", "/swagger-ui/**",
             "/**.html", "/webjars/**", "/configuration/**", "/swagger-resources/**"
