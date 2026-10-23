@@ -113,6 +113,13 @@ Para que as imagens não desapareçam em um novo deploy, adicione um **Persisten
 
 O perfil `prod` não cria uma conta padrão. Para criar o primeiro administrador, configure temporariamente `BOOTSTRAP_ADMIN_ENABLED=true`, `BOOTSTRAP_ADMIN_EMAIL` e `BOOTSTRAP_ADMIN_PASSWORD` com credenciais fortes. Depois que a conta for criada, desative a opção (`BOOTSTRAP_ADMIN_ENABLED=false`) e remova a senha das variáveis do serviço.
 
+## Deploy
+
+- API: https://stock-api-5axl.onrender.com
+- Documentação (Swagger): https://stock-api-5axl.onrender.com/docs-stock.html
+
+> Hospedada no plano gratuito do Render: se ficar um tempo sem acesso, a primeira requisição pode demorar alguns minutos para "acordar" o servidor.
+
 ## Documentação e rotas
 
 Com a aplicação no ar, abra o Swagger em:
