@@ -2,15 +2,18 @@ package com.marquesdev.stock;
 
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.parser.PdfTextExtractor;
+import com.marquesdev.stock.jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,17 +28,19 @@ public class ReportIT {
     private static final String REPORT_URI = "/api/v1/reports/stock-movements/pdf";
     private static final String ADMIN_USER = "report-admin@gmail.com";
     private static final String ATTENDANT_USER = "report-attendant@gmail.com";
-    private static final String USER_PASS = "123456";
 
     @Autowired
     private WebTestClient testClient;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Test
     public void generateStockMovementReport_WithMovements_ReturnsPdfWithReportData() throws IOException {
         byte[] pdf = testClient
                 .get()
                 .uri(REPORT_URI)
-                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, USER_PASS))
+                .headers(authorizationFor(ADMIN_USER, "ADMIN"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_PDF)
@@ -65,7 +70,7 @@ public class ReportIT {
                         .queryParam("endDate", "2026-01-01T23:59:59")
                         .queryParam("productCode", "REPORT-001")
                         .build())
-                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ATTENDANT_USER, USER_PASS))
+                .headers(authorizationFor(ATTENDANT_USER, "ATTENDANT"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_PDF)
@@ -87,7 +92,7 @@ public class ReportIT {
                         .path(REPORT_URI)
                         .queryParam("productCode", "DOES-NOT-EXIST")
                         .build())
-                .headers(JwtAuthentication.getHeadersAuthorization(testClient, ADMIN_USER, USER_PASS))
+                .headers(authorizationFor(ADMIN_USER, "ADMIN"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_PDF)
@@ -117,5 +122,10 @@ public class ReportIT {
         } finally {
             reader.close();
         }
+    }
+
+    private Consumer<HttpHeaders> authorizationFor(String email, String profile) {
+        String token = jwtUtils.createToken(email, profile).getToken();
+        return headers -> headers.setBearerAuth(token);
     }
 }
