@@ -17,7 +17,7 @@ insert into products (id, name, description, category_id, code, quantity, unit_p
 values ('f10e8400-e29b-41d4-a716-446655440006', 'Produto relatório', 'Produto usado nos testes do relatório', 'f10e8400-e29b-41d4-a716-446655440003', 'REPORT-001', 8, 89.90, 1, 'products/report.png');
 
 insert into stock_movements (id, product_id, type, quantity, unit_price, note, supplier_id, client_id, movement_code, created_at, created_by)
-values ('f10e8400-e29b-41d4-a716-446655440007', 'f10e8400-e29b-41d4-a716-446655440006', 'ENTRY', 5, 89.90, 'Entrada para relatório', 'f10e8400-e29b-41d4-a716-446655440004', null, '202601-900001', TIMESTAMP '2026-01-01 10:00:00', 'report-admin@gmail.com');
+values ('f10e8400-e29b-41d4-a716-446655440007', 'f10e8400-e29b-41d4-a716-446655440006', 'ENTRY', 5, 89.90, 'Entrada para relatório', 'f10e8400-e29b-41d4-a716-446655440004', null, '202601-900001', '2026-01-01 10:00:00.000', 'report-admin@gmail.com');
 
 insert into stock_movements (id, product_id, type, quantity, unit_price, note, supplier_id, client_id, movement_code, created_at, created_by)
-values ('f10e8400-e29b-41d4-a716-446655440008', 'f10e8400-e29b-41d4-a716-446655440006', 'EXIT', 2, 89.90, 'Saida para relatório', null, 'f10e8400-e29b-41d4-a716-446655440005', '202601-900002', TIMESTAMP '2026-01-02 10:00:00', 'report-attendant@gmail.com');
+values ('f10e8400-e29b-41d4-a716-446655440008', 'f10e8400-e29b-41d4-a716-446655440006', 'EXIT', 2, 89.90, 'Saida para relatório', null, 'f10e8400-e29b-41d4-a716-446655440005', '202601-900002', '2026-01-02 10:00:00.000', 'report-attendant@gmail.com');
